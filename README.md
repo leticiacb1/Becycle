@@ -18,15 +18,23 @@ Nome da marca:
 
 - BeCycle 
 
-(logo vem aqui)
+<div align="center">
+<img alt="logo black and white" src = "img_README/tela-bike-black-and-white-1.png"></img>
+</div>
 
 ## Interface
 
 ### Proposta UX 1 - C
 Descricão da primeira proposta da interface:
 
-- Imagem da proposta: (foto aqui)
-- Imagem da proposta no LCD: (foto aqui)
+- Imagem da proposta: 
+<div align="center">
+<img alt="proposta da interface" src = "img_README/Proposta UX 1 - C.jpeg"></img>
+</div>
+- Imagem da proposta no LCD: 
+<div align="center">
+<img alt="lcd com interface" src = "img_README/becycle1natela.jpg"></img>
+</div>
 - Vídeo explicando a interface: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/EdkpyNuwfBpBllGnrawMWQUBveybnjv6hNb0As1sc1C3Sg?e=BQiP9L
 
 ### Proposta UX 2 - B
@@ -44,8 +52,15 @@ Detalhes da segunda interação da proposta de interface:
 - Alterar cor de fundo para branco , para maior contraste
 - Icone de acelerar ou desacelerar "colorido" verde/vermelho (auxilio visual)
 
-- Imagem da proposta: (inserir aqui)
-- Imagem da proposta no LCD: (inserir aqui)
+- Imagem da proposta:
+<div align="center">
+<img alt="proposta da interface" src = "img_README/Proposta UX 2 - B.jpeg"></img>
+</div>
+- Imagem da proposta no LCD: 
+<div align="center">
+<img alt="lcd com interface" src = "img_README/becycle2natela.jpg"></img>
+</div>
+- Vídeo explicativo: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/Ef7LpS-XtGtHgFJdoI-nnlcBDtCAWLhO4IVfrB1vLdf7gQ?e=DnuHbQ
 - Vídeo da entrevista: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/EYOF0LEiglJJle5L3MUPjOoB8Faimvwvy1pve3nki-HOOg?e=f2Mc2T
 
 ### Proposta UX 3 - A
@@ -57,7 +72,10 @@ Detalhes da terceira interação da proposta de interface:
  da interface
 -->
 
-- Imagem da proposta: (inserir aqui)
-- Imagem da proposta no LCD: (capturar)
-- Vídeo explicativo: (gravar?)
+- Imagem da proposta: não houve alterações. Detalhes apresentados no vídeo explicativo. 
+- Imagem da proposta no LCD: 
+<div align="center">
+<img alt="logo black and white" src = "img_README/gif_final_lcd.gif"></img>
+</div>
+- Vídeo explicativo: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/EWyWmf7kLURMu72xYrMihvsB-D_SASyCjj88AWJh0NdX7Q?e=2vPkE1
 - Vídeo da entrevista: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/EcXFIsi3_6lCpo457zidFIYB4tOqF8yySVvWWhgt1G_7GA?e=WPgvr2
