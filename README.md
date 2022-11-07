@@ -10,37 +10,26 @@ Mais detalhes no site da disciplina:
 
 Integrantes:
 
-- Nome 
-- Nome
+- Letícia Coêlho
+- Lorran Lopes
+- Lister Ribeiro
 
 Nome da marca:
 
-- Nome e logo?
+- BeCycle 
+
+(logo vem aqui)
 
 ## Interface
 
 ### Proposta UX 1 - C
-
-> - Mockup da interface:
->    - Satisfaz todos os requisitos do projeto
->    - Indica quais são os widgets do LVGL 
->    - Apresentar uma foto da interface sendo executada no LCD (imagem estática)
-> - Grava um vídeo explicando a interface
-
-
 Descricão da primeira proposta da interface:
 
-- Imagem da proposta
-- Imagem da proposta no LCD
-- Vídeo explicando a interface
+- Imagem da proposta: (foto aqui)
+- Imagem da proposta no LCD: (foto aqui)
+- Vídeo explicando a interface: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/EdkpyNuwfBpBllGnrawMWQUBveybnjv6hNb0As1sc1C3Sg?e=BQiP9L
 
 ### Proposta UX 2 - B
-
-> - Especifica e justifica quais vão ser as fontes (e tamanhos) a serem usadas na interface.
-> - Pega feedback com o Luiz do Fablab e incorpora na interface
->   - Grava em vídeo a entrevista
-> - Grava um vídeo atualizado explicando o que foi sugerido e o que fizeram para melhorar a interface
-> - Apresentar uma foto da interface sendo executada no LCD (imagem estática)
 
 Detalhes da segunda interação da proposta de interface:
 
@@ -48,18 +37,18 @@ Detalhes da segunda interação da proposta de interface:
  Adicionar texto descrevendo a evolução 
  da interface
 -->
+- Fontes e tamanhos: a fonte escolhida foi a Cascadia Code, em 3 tamanhos: P, M e G. A escolha da fonte se deve ao fato de ela ser utilizada nos terminais de comando do Microsoft Windows, que detem mais de 76% do mercado de sistemas operacionais de desktops. Então, a escolha busca criar uma familiaridade com o usuário. 
+#### Mudanças sugeridas pelo LUIZ: 
+- Opção de alterar unidade da velocidade mostrada (milhas/hora)
+- Drop down com possíveis tamanhos de aro (medidas normalmente em polegadas ou milímetro)
+- Alterar cor de fundo para branco , para maior contraste
+- Icone de acelerar ou desacelerar "colorido" verde/vermelho (auxilio visual)
 
-- Imagem da proposta
-- Imagem da proposta no LCD
-- Vídeo
+- Imagem da proposta: (inserir aqui)
+- Imagem da proposta no LCD: (inserir aqui)
+- Vídeo da entrevista: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/EYOF0LEiglJJle5L3MUPjOoB8Faimvwvy1pve3nki-HOOg?e=f2Mc2T
 
 ### Proposta UX 3 - A
-
-> - Especifica e justifica as cores a serem usadas na interface
-> - Pega feedback com mais uma pessoa externa e incorpora na interface
->     - Grava em vídeo a entrevista
-> - Grava um vídeo atualizado explicando o que foi sugerido e o que fizeram para melhorar a interface
-> - Apresentar uma foto da interface sendo executada no LCD (imagem estática)
 
 Detalhes da terceira interação da proposta de interface:
 
@@ -68,6 +57,7 @@ Detalhes da terceira interação da proposta de interface:
  da interface
 -->
 
-- Imagem da proposta
-- Imagem da proposta no LCD
-- Vídeo 
+- Imagem da proposta: (inserir aqui)
+- Imagem da proposta no LCD: (capturar)
+- Vídeo explicativo: (gravar?)
+- Vídeo da entrevista: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/EcXFIsi3_6lCpo457zidFIYB4tOqF8yySVvWWhgt1G_7GA?e=WPgvr2
