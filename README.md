@@ -45,7 +45,7 @@ Detalhes da segunda interação da proposta de interface:
  Adicionar texto descrevendo a evolução 
  da interface
 -->
-- Fontes e tamanhos: a fonte escolhida foi a Cascadia Code, em 3 tamanhos: P (+/- 45 px), M (+/- 18 px), e G (+/- 12 px). A escolha da fonte se deve ao fato de ela ser utilizada nos terminais de comando do Microsoft Windows, que detem mais de 76% do mercado de sistemas operacionais de desktops. Então, a escolha busca criar uma familiaridade com o usuário. 
+- Fontes e tamanhos: a fonte escolhida foi a Cascadia Code, em 3 tamanhos: G (+/- 45 px), M (+/- 18 px), e P (+/- 12 px). A escolha da fonte se deve ao fato de ela ser utilizada nos terminais de comando do Microsoft Windows, que detem mais de 76% do mercado de sistemas operacionais de desktops. Então, a escolha busca criar uma familiaridade com o usuário. 
 - Cores: as cores escolhidas no projeto foram principalmente inspiradas na retratação da natureza. Os tons alaranjados remetem a terra do Mountain Bike enquanto os tons de verede remetem ao verde da floresta. A combinação foi feita para trazer o sentimento de liberdade e conexão com a natureza. 
 #### Mudanças sugeridas pelo LUIZ: 
 - Opção de alterar unidade da velocidade mostrada (milhas/hora)
