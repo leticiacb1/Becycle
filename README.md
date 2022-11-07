@@ -19,7 +19,7 @@ Nome da marca:
 - BeCycle 
 
 <div align="center">
-<img alt="logo black and white" src = "img_README/tela-bike-black-and-white-1.png"></img>
+<img alt="logo black and white" src = "img_README/logo.png"></img>
 </div>
 
 ## Interface
