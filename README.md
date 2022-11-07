@@ -33,7 +33,7 @@ Descricão da primeira proposta da interface:
 </div>
 - Imagem da proposta no LCD: 
 <div align="center">
-<img alt="lcd com interface" src = "img_README/becycle1natela.jpg"></img>
+<img alt="lcd com interface" src = "img_README/becycle1natela.jpg" width=70%></img>
 </div>
 - Vídeo explicando a interface: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/EdkpyNuwfBpBllGnrawMWQUBveybnjv6hNb0As1sc1C3Sg?e=BQiP9L
 
@@ -45,7 +45,8 @@ Detalhes da segunda interação da proposta de interface:
  Adicionar texto descrevendo a evolução 
  da interface
 -->
-- Fontes e tamanhos: a fonte escolhida foi a Cascadia Code, em 3 tamanhos: P, M e G. A escolha da fonte se deve ao fato de ela ser utilizada nos terminais de comando do Microsoft Windows, que detem mais de 76% do mercado de sistemas operacionais de desktops. Então, a escolha busca criar uma familiaridade com o usuário. 
+- Fontes e tamanhos: a fonte escolhida foi a Cascadia Code, em 3 tamanhos: P (+/- 45 px), M (+/- 18 px), e G (+/- 12 px). A escolha da fonte se deve ao fato de ela ser utilizada nos terminais de comando do Microsoft Windows, que detem mais de 76% do mercado de sistemas operacionais de desktops. Então, a escolha busca criar uma familiaridade com o usuário. 
+- Cores: as cores escolhidas no projeto foram principalmente inspiradas na retratação da natureza. Os tons alaranjados remetem a terra do Mountain Bike enquanto os tons de verede remetem ao verde da floresta. A combinação foi feita para trazer o sentimento de liberdade e conexão com a natureza. 
 #### Mudanças sugeridas pelo LUIZ: 
 - Opção de alterar unidade da velocidade mostrada (milhas/hora)
 - Drop down com possíveis tamanhos de aro (medidas normalmente em polegadas ou milímetro)
@@ -60,8 +61,9 @@ Detalhes da segunda interação da proposta de interface:
 <div align="center">
 <img alt="lcd com interface" src = "img_README/becycle2natela.jpg"></img>
 </div>
-- Vídeo explicativo: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/Ef7LpS-XtGtHgFJdoI-nnlcBDtCAWLhO4IVfrB1vLdf7gQ?e=DnuHbQ
-- Vídeo da entrevista: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/EYOF0LEiglJJle5L3MUPjOoB8Faimvwvy1pve3nki-HOOg?e=f2Mc2T
+Vídeo explicativo: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/Ef7LpS-XtGtHgFJdoI-nnlcBDtCAWLhO4IVfrB1vLdf7gQ?e=DnuHbQ  
+
+Vídeo da entrevista: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/EYOF0LEiglJJle5L3MUPjOoB8Faimvwvy1pve3nki-HOOg?e=f2Mc2T
 
 ### Proposta UX 3 - A
 
@@ -77,5 +79,6 @@ Detalhes da terceira interação da proposta de interface:
 <div align="center">
 <img alt="logo black and white" src = "img_README/gif_final_lcd.gif"></img>
 </div>
-- Vídeo explicativo: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/EWyWmf7kLURMu72xYrMihvsB-D_SASyCjj88AWJh0NdX7Q?e=2vPkE1
-- Vídeo da entrevista: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/EcXFIsi3_6lCpo457zidFIYB4tOqF8yySVvWWhgt1G_7GA?e=WPgvr2
+Vídeo explicativo: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/EWyWmf7kLURMu72xYrMihvsB-D_SASyCjj88AWJh0NdX7Q?e=2vPkE1
+
+Vídeo da entrevista: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/EcXFIsi3_6lCpo457zidFIYB4tOqF8yySVvWWhgt1G_7GA?e=WPgvr2
