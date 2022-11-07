@@ -35,7 +35,7 @@ Descricão da primeira proposta da interface:
 <div align="center">
 <img alt="lcd com interface" src = "img_README/becycle1natela.jpg" width=70%></img>
 </div>
-- Vídeo explicando a interface: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/EdkpyNuwfBpBllGnrawMWQUBveybnjv6hNb0As1sc1C3Sg?e=BQiP9L
+- Vídeo explicando a interface: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/EdkpyNuwfBpBllGnrawMWQUBveybnjv6hNb0As1sc1C3Sg?e=1ifUkj
 
 ### Proposta UX 2 - B
 
@@ -61,9 +61,9 @@ Detalhes da segunda interação da proposta de interface:
 <div align="center">
 <img alt="lcd com interface" src = "img_README/becycle2natela.jpg"></img>
 </div>
-Vídeo explicativo: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/Ef7LpS-XtGtHgFJdoI-nnlcBDtCAWLhO4IVfrB1vLdf7gQ?e=DnuHbQ  
+Vídeo explicativo: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/Ef7LpS-XtGtHgFJdoI-nnlcBDtCAWLhO4IVfrB1vLdf7gQ?e=XFgjst
 
-Vídeo da entrevista: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/EYOF0LEiglJJle5L3MUPjOoB8Faimvwvy1pve3nki-HOOg?e=f2Mc2T
+Vídeo da entrevista: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/EYOF0LEiglJJle5L3MUPjOoB8Faimvwvy1pve3nki-HOOg?e=x3EmKe
 
 ### Proposta UX 3 - A
 
@@ -79,6 +79,6 @@ Detalhes da terceira interação da proposta de interface:
 <div align="center">
 <img alt="logo black and white" src = "img_README/gif_final_lcd.gif"></img>
 </div>
-Vídeo explicativo: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/EWyWmf7kLURMu72xYrMihvsB-D_SASyCjj88AWJh0NdX7Q?e=2vPkE1
+Vídeo explicativo: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/EWyWmf7kLURMu72xYrMihvsB-D_SASyCjj88AWJh0NdX7Q?e=v8WteN
 
-Vídeo da entrevista: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/EcXFIsi3_6lCpo457zidFIYB4tOqF8yySVvWWhgt1G_7GA?e=WPgvr2
+Vídeo da entrevista: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/EcXFIsi3_6lCpo457zidFIYB4tOqF8yySVvWWhgt1G_7GA?e=V5QsuU
