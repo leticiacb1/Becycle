@@ -7,13 +7,21 @@
 #include "ili9341.h"
 #include "lvgl.h"
 #include "touch/touch.h"
+#include "fundo_inicial.h"
+#include "logo.h"
+#include "logoAoLigar.h"
+#include "icones.h"
+#include "rec.h"
+#include "reset.h"
+#include "clock.h"
+
 
 /************************************************************************/
 /* LCD / LVGL                                                           */
 /************************************************************************/
 
-#define LV_HOR_RES_MAX          (320)
-#define LV_VER_RES_MAX          (240)
+#define LV_HOR_RES_MAX          (240)
+#define LV_VER_RES_MAX          (320)
 
 /*A static or global variable to store the buffers*/
 static lv_disp_draw_buf_t disp_buf;
@@ -22,6 +30,10 @@ static lv_disp_draw_buf_t disp_buf;
 static lv_color_t buf_1[LV_HOR_RES_MAX * LV_VER_RES_MAX];
 static lv_disp_drv_t disp_drv;          /*A variable to hold the drivers. Must be static or global.*/
 static lv_indev_drv_t indev_drv;
+
+// globais 
+lv_obj_t * labelBtn1, * labelBtnPlayPause;
+lv_obj_t * labelClock;
 
 /************************************************************************/
 /* RTOS                                                                 */
@@ -65,35 +77,139 @@ static void event_handler(lv_event_t * e) {
 }
 
 void lv_ex_btn_1(void) {
-	lv_obj_t * label;
+// 	lv_obj_t * label;
+// 
+// 	lv_obj_t * btn1 = lv_btn_create(lv_scr_act());
+// 	lv_obj_add_event_cb(btn1, event_handler, LV_EVENT_ALL, NULL);
+// 	lv_obj_align(btn1, LV_ALIGN_CENTER, 0, -40);
+// 
+// 	label = lv_label_create(btn1);
+// 	lv_label_set_text(label, "Corsi");
+// 	lv_obj_center(label);
+// 
+// 	lv_obj_t * btn2 = lv_btn_create(lv_scr_act());
+// 	lv_obj_add_event_cb(btn2, event_handler, LV_EVENT_ALL, NULL);
+// 	lv_obj_align(btn2, LV_ALIGN_CENTER, 0, 40);
+// 	lv_obj_add_flag(btn2, LV_OBJ_FLAG_CHECKABLE);
+// 	lv_obj_set_height(btn2, LV_SIZE_CONTENT);
+// 
+// 	label = lv_label_create(btn2);
+// 	lv_label_set_text(label, "Toggle");
+// 	lv_obj_center(label);
+}
 
+
+void lv_bike(void) {
+// ---------------- Estilo --------------------
+	static lv_style_t style;
+	lv_style_init(&style);
+	lv_style_set_bg_color(&style, lv_color_white());
+	lv_style_set_border_color(&style, lv_color_white());
+	lv_style_set_border_width(&style, 0);
+// --------------------------------------------
+// ----------------	Base tela main	-----------
+	lv_obj_t * img = lv_img_create(lv_scr_act());
+	lv_img_set_src(img, &fundo_inicial);
+	lv_obj_align(img, LV_ALIGN_CENTER,0, 0);
+// ---------------------------------------------------
+
+// ----------------	Icones tela main	-----------
+	lv_obj_t * icons = lv_img_create(lv_scr_act());
+	lv_img_set_src(icons, &icones);
+	lv_obj_align(icons, LV_ALIGN_CENTER,0, 30);
+// ---------------------------------------------------
+
+// ----------------	Imagem da tela de ligar	-----------
+// 	lv_obj_t * logoOn = lv_img_create(lv_scr_act());
+// 	lv_img_set_src(logoOn, &logoAoLigar);
+// 	lv_obj_align(logoOn, LV_ALIGN_CENTER, 0, 0);
+// ---------------------------------------------------
+
+// ----------------	Logo posicionada nas telas	-----------
+	lv_obj_t * logoLetras = lv_img_create(lv_scr_act());
+	lv_img_set_src(logoLetras, &logo);
+	lv_obj_align(logoLetras, LV_ALIGN_TOP_LEFT, 4, 4);
+// ---------------------------------------------------
+
+// ----------------	Reloginho	-----------
+	lv_obj_t * clockzinho = lv_img_create(lv_scr_act());
+	lv_img_set_src(clockzinho, &clock);
+	lv_obj_align(clockzinho, LV_ALIGN_TOP_LEFT, 63, 44);
+// ---------------------------------------------------
+
+//------------------------ Hora--------------------
+// 	labelClock = lv_label_create(lv_scr_act());
+// 	lv_obj_align(labelClock, LV_ALIGN_LEFT_MID, 35 , -45);
+// 	lv_obj_set_style_text_font(labelClock, &cascadia25, LV_STATE_DEFAULT);
+// 	lv_obj_set_style_text_color(labelClock, lv_color_white(), LV_STATE_DEFAULT);
+// 	lv_label_set_text_fmt(labelClock, "%02d", 23);
+// -------------------------------------------------
+
+// ------------------Botão Config ------------------------
 	lv_obj_t * btn1 = lv_btn_create(lv_scr_act());
 	lv_obj_add_event_cb(btn1, event_handler, LV_EVENT_ALL, NULL);
-	lv_obj_align(btn1, LV_ALIGN_CENTER, 0, -40);
+	lv_obj_set_style_text_color(btn1, lv_color_make(0x00, 0x00, 0x00), LV_STATE_DEFAULT);
+	lv_obj_align(btn1, LV_ALIGN_TOP_RIGHT, -6, 2);
+	lv_obj_set_width(btn1, 35);  lv_obj_set_height(btn1, 32);
+	lv_obj_add_style(btn1, &style, 0);
+		
+	labelBtn1 = lv_label_create(btn1);
+	lv_label_set_text(labelBtn1, LV_SYMBOL_SETTINGS);
+	lv_obj_center(labelBtn1);
+//----------------------------------------------------------
 
-	label = lv_label_create(btn1);
-	lv_label_set_text(label, "Corsi");
-	lv_obj_center(label);
+// ----------------Rec laranja (gravando) ---------------------
+	lv_obj_t * rec_laranja = lv_img_create(lv_scr_act());
+	lv_img_set_src(rec_laranja, &rec);
+	lv_obj_align(rec_laranja, LV_ALIGN_BOTTOM_MID,0,-2);
+//----------------------------------------------------------
 
-	lv_obj_t * btn2 = lv_btn_create(lv_scr_act());
-	lv_obj_add_event_cb(btn2, event_handler, LV_EVENT_ALL, NULL);
-	lv_obj_align(btn2, LV_ALIGN_CENTER, 0, 40);
-	lv_obj_add_flag(btn2, LV_OBJ_FLAG_CHECKABLE);
-	lv_obj_set_height(btn2, LV_SIZE_CONTENT);
+// ----------------Reset ---------------------
+	LV_IMG_DECLARE(imgReset);
 
-	label = lv_label_create(btn2);
-	lv_label_set_text(label, "Toggle");
-	lv_obj_center(label);
+	static lv_style_t style_def;
+
+	lv_style_init(&style_def); /*Darken the button when pressed and make it wider*/
+	static lv_style_t style_pr;
+	lv_style_init(&style_pr);
+	lv_style_set_img_recolor_opa(&style_pr, LV_OPA_30);
+	lv_style_set_img_recolor(&style_pr, lv_color_black());
+
+	lv_obj_t * btnReset = lv_imgbtn_create(lv_scr_act());
+	lv_imgbtn_set_src(btnReset, LV_IMGBTN_STATE_RELEASED, NULL, NULL, &reset);
+	lv_obj_add_style(btnReset, &style_def, 0);
+	lv_obj_add_style(btnReset, &style_pr, LV_STATE_PRESSED);
+	lv_obj_align_to(btnReset, rec_laranja, LV_ALIGN_BOTTOM_LEFT, -180, 99);
+	//lv_obj_align(btnReset, LV_ALIGN_BOTTOM_LEFT, 0, -2); // pq n funciona?
+//----------------------------------------------------------
+
+// ------------------Botão Play/Pause ------------------------
+	lv_obj_t * btn_play_pause = lv_btn_create(lv_scr_act());
+	lv_obj_add_event_cb(btn_play_pause, event_handler, LV_EVENT_ALL, NULL);
+	lv_obj_set_style_text_color(btn_play_pause, lv_color_make(0x00, 0x00, 0x00), LV_STATE_DEFAULT);
+	lv_obj_align(btn_play_pause, LV_ALIGN_BOTTOM_RIGHT, -22, -2);
+	lv_obj_set_width(btn_play_pause, 35);  lv_obj_set_height(btn_play_pause, 32);
+	lv_obj_add_style(btn_play_pause, &style, 0);
+
+	labelBtnPlayPause = lv_label_create(btn_play_pause);
+	lv_label_set_text(labelBtnPlayPause, LV_SYMBOL_STOP);
+	lv_obj_center(labelBtnPlayPause);
+//----------------------------------------------------------
+	
 }
 
 /************************************************************************/
 /* TASKS                                                                */
 /************************************************************************/
 
+
 static void task_lcd(void *pvParameters) {
 	int px, py;
 
 	lv_ex_btn_1();
+	lv_bike();
+	lv_obj_clear_flag(lv_scr_act(), LV_OBJ_FLAG_SCROLLABLE);
+	
 
 	for (;;)  {
 		lv_tick_inc(50);
@@ -155,8 +271,8 @@ void my_input_read(lv_indev_drv_t * drv, lv_indev_data_t*data) {
 	else
 		data->state = LV_INDEV_STATE_RELEASED; 
 	
-	data->point.x = px;
-	data->point.y = py;
+	data->point.x = py;
+	data->point.y = 320 - px;
 }
 
 void configure_lvgl(void) {
@@ -190,6 +306,7 @@ int main(void) {
 
 	/* LCd, touch and lvgl init*/
 	configure_lcd();
+	ili9341_set_orientation(ILI9341_FLIP_Y | ILI9341_SWITCH_XY);
 	configure_touch();
 	configure_lvgl();
 

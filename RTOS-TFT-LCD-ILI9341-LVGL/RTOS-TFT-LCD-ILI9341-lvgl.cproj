@@ -316,7 +316,7 @@
         <documentation help="http://asf.atmel.com/docs/3.40.0/common.components.touch.mxt.example_usart.same70_xplained/html/index.html" />
         <offline-documentation help="" />
         <dependencies>
-          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.42.0" />
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.44.1" />
         </dependencies>
         <project id="common.components.touch.mxt.example_usart.same70_xplained" value="Add" config="" content-id="Atmel.ASF" />
         <board id="board.same70_xplained" value="Add" config="" content-id="Atmel.ASF" />
@@ -663,6 +663,7 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Folder Include="img" />
     <Folder Include="src\" />
     <Folder Include="src\ASF\" />
     <Folder Include="src\ASF\common\" />
@@ -2264,7 +2265,28 @@
     <Compile Include="src\ASF\thirdparty\lvgl8\tests\unity\unity_support.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\clock.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\config\conf_touch.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\fundo_inicial.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\icones.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\logo.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\logoAoLigar.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\rec.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\reset.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\touch\touch.c">
