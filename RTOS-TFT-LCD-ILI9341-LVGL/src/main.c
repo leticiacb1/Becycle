@@ -14,6 +14,11 @@
 #include "rec.h"
 #include "reset.h"
 #include "clock.h"
+#include "branco.h"
+#include "line.h"
+#include "acelarando.h"
+#include "desacelarando.h"
+
 
 
 /************************************************************************/
@@ -22,7 +27,10 @@
 
 #define LV_HOR_RES_MAX          (240)
 #define LV_VER_RES_MAX          (320)
-
+LV_FONT_DECLARE(cascadia20);
+LV_FONT_DECLARE(cascadia25);
+LV_FONT_DECLARE(cascadia17);
+LV_FONT_DECLARE(cascadia65);
 /*A static or global variable to store the buffers*/
 static lv_disp_draw_buf_t disp_buf;
 
@@ -33,7 +41,7 @@ static lv_indev_drv_t indev_drv;
 
 // globais 
 lv_obj_t * labelBtn1, * labelBtnPlayPause;
-lv_obj_t * labelClock;
+lv_obj_t * labelClock, * labelKmValue, * labelMMSS, * labelAvarageSpeed, * labelMode, * labelKm, * labelMMSSunit, * labelSpeedUnity, * labelCurrentSpeed, * labelCurrentSpeedUnity;
 
 /************************************************************************/
 /* RTOS                                                                 */
@@ -106,11 +114,20 @@ void lv_bike(void) {
 	lv_style_set_bg_color(&style, lv_color_white());
 	lv_style_set_border_color(&style, lv_color_white());
 	lv_style_set_border_width(&style, 0);
+	lv_style_set_arc_rounded(&style, 0);
+	lv_style_set_img_recolor_opa(&style, LV_OPA_30);
+	lv_style_set_img_recolor(&style, lv_color_black());
 // --------------------------------------------
 // ----------------	Base tela main	-----------
-	lv_obj_t * img = lv_img_create(lv_scr_act());
-	lv_img_set_src(img, &fundo_inicial);
-	lv_obj_align(img, LV_ALIGN_CENTER,0, 0);
+// 	lv_obj_t * img = lv_img_create(lv_scr_act());
+// 	lv_img_set_src(img, &fundo_inicial);
+// 	lv_obj_align(img, LV_ALIGN_CENTER,0, 0);
+// ---------------------------------------------------
+
+// ----------------	Branco	-----------
+	lv_obj_t * white = lv_img_create(lv_scr_act());
+	lv_img_set_src(white, &branco);
+	lv_obj_align(white, LV_ALIGN_CENTER, 0, 0);
 // ---------------------------------------------------
 
 // ----------------	Icones tela main	-----------
@@ -118,6 +135,34 @@ void lv_bike(void) {
 	lv_img_set_src(icons, &icones);
 	lv_obj_align(icons, LV_ALIGN_CENTER,0, 30);
 // ---------------------------------------------------
+
+//------------------------ (o número) [km]--------------------
+	labelKmValue = lv_label_create(lv_scr_act());
+	lv_obj_align(labelKmValue, LV_ALIGN_CENTER, -93, 85); 
+	lv_obj_set_style_text_font(labelKmValue, &cascadia25, LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(labelKmValue, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text_fmt(labelKmValue, "%d",13);
+// -------------------------------------------------
+
+
+
+//------------------------ (os números do cronômetro) [MM:SS]--------------------
+	labelMMSS = lv_label_create(lv_scr_act());
+	lv_obj_align(labelMMSS, LV_ALIGN_CENTER, -5, 85);
+	lv_obj_set_style_text_font(labelMMSS, &cascadia25, LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(labelMMSS, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text_fmt(labelMMSS, "%d%d:%d%d",3,4,5,5);
+// -------------------------------------------------
+
+
+//------------------------ (o valor) [km/h]--------------------
+	labelAvarageSpeed = lv_label_create(lv_scr_act());
+	lv_obj_align(labelAvarageSpeed, LV_ALIGN_CENTER, 90, 85);
+	lv_obj_set_style_text_font(labelAvarageSpeed, &cascadia25, LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(labelAvarageSpeed, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text_fmt(labelAvarageSpeed, "%d", 18);
+// -------------------------------------------------
+
 
 // ----------------	Imagem da tela de ligar	-----------
 // 	lv_obj_t * logoOn = lv_img_create(lv_scr_act());
@@ -131,6 +176,20 @@ void lv_bike(void) {
 	lv_obj_align(logoLetras, LV_ALIGN_TOP_LEFT, 4, 4);
 // ---------------------------------------------------
 
+// ----------------	Modo atual (ride/config)-----------
+	labelMode = lv_label_create(lv_scr_act());
+	lv_obj_align(labelMode, LV_ALIGN_TOP_MID, 5, 4);
+	lv_obj_set_style_text_font(labelMode, &cascadia25, LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(labelMode, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text_fmt(labelMode, "Ride");
+// ---------------------------------------------------
+
+// ----------------	LInha do header  -----------
+	lv_obj_t * lineDivisora = lv_img_create(lv_scr_act());
+	lv_img_set_src(lineDivisora, &line);
+	lv_obj_align(lineDivisora, LV_ALIGN_TOP_LEFT, 0, 24);
+// ---------------------------------------------------
+
 // ----------------	Reloginho	-----------
 	lv_obj_t * clockzinho = lv_img_create(lv_scr_act());
 	lv_img_set_src(clockzinho, &clock);
@@ -138,25 +197,59 @@ void lv_bike(void) {
 // ---------------------------------------------------
 
 //------------------------ Hora--------------------
-// 	labelClock = lv_label_create(lv_scr_act());
-// 	lv_obj_align(labelClock, LV_ALIGN_LEFT_MID, 35 , -45);
-// 	lv_obj_set_style_text_font(labelClock, &cascadia25, LV_STATE_DEFAULT);
-// 	lv_obj_set_style_text_color(labelClock, lv_color_white(), LV_STATE_DEFAULT);
-// 	lv_label_set_text_fmt(labelClock, "%02d", 23);
+	labelClock = lv_label_create(lv_scr_act());
+	lv_obj_align(labelClock, LV_ALIGN_TOP_LEFT, 84, 47);
+	lv_obj_set_style_text_font(labelClock, &cascadia20, LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(labelClock, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text_fmt(labelClock, "%d%d:%d%d:%d%d",2,3,4,5,4,7);
 // -------------------------------------------------
+
+//------------------------ Velocidade Instantanea--------------------
+	labelCurrentSpeed = lv_label_create(lv_scr_act());
+	lv_obj_align(labelCurrentSpeed, LV_ALIGN_CENTER, 0, -60);
+	lv_obj_set_style_text_font(labelCurrentSpeed, &cascadia65, LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(labelCurrentSpeed, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text_fmt(labelCurrentSpeed, "%d", 23);
+// -------------------------------------------------
+
+//------------------------ Unidade da Velocidade Instantanea--------------------
+	labelCurrentSpeedUnity = lv_label_create(lv_scr_act());
+	lv_obj_align(labelCurrentSpeedUnity, LV_ALIGN_CENTER, 0, -18);
+	lv_obj_set_style_text_font(labelCurrentSpeedUnity, &cascadia25, LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(labelCurrentSpeedUnity, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text_fmt(labelCurrentSpeedUnity, "km/h");
+// -------------------------------------------------
+
+// ----------------	Flecha acelarando verde	-----------
+	lv_obj_t * acelerandoVerde = lv_img_create(lv_scr_act());
+	lv_img_set_src(acelerandoVerde, &acelarando); 
+	lv_obj_align(acelerandoVerde,  LV_ALIGN_CENTER, 60, -60);
+// ---------------------------------------------------
+
+// ----------------	Flecha DESacelarando vermelha	-----------
+	lv_obj_t * desacelerandoRed = lv_img_create(lv_scr_act());
+	lv_img_set_src(desacelerandoRed, &desacelarando);
+	lv_obj_align(desacelerandoRed,  LV_ALIGN_CENTER, -60, -60);
+// ---------------------------------------------------
 
 // ------------------Botão Config ------------------------
 	lv_obj_t * btn1 = lv_btn_create(lv_scr_act());
 	lv_obj_add_event_cb(btn1, event_handler, LV_EVENT_ALL, NULL);
 	lv_obj_set_style_text_color(btn1, lv_color_make(0x00, 0x00, 0x00), LV_STATE_DEFAULT);
 	lv_obj_align(btn1, LV_ALIGN_TOP_RIGHT, -6, 2);
-	lv_obj_set_width(btn1, 35);  lv_obj_set_height(btn1, 32);
+	lv_obj_set_width(btn1, 45);  lv_obj_set_height(btn1, 30);
 	lv_obj_add_style(btn1, &style, 0);
 		
 	labelBtn1 = lv_label_create(btn1);
 	lv_label_set_text(labelBtn1, LV_SYMBOL_SETTINGS);
 	lv_obj_center(labelBtn1);
 //----------------------------------------------------------
+
+// ----------------	LInha do footter  -----------
+	lv_obj_t * lineDivisoraF = lv_img_create(lv_scr_act());
+	lv_img_set_src(lineDivisoraF, &line);
+	lv_obj_align(lineDivisoraF, LV_ALIGN_BOTTOM_MID, 0, -35);
+// ---------------------------------------------------
 
 // ----------------Rec laranja (gravando) ---------------------
 	lv_obj_t * rec_laranja = lv_img_create(lv_scr_act());
@@ -177,9 +270,8 @@ void lv_bike(void) {
 
 	lv_obj_t * btnReset = lv_imgbtn_create(lv_scr_act());
 	lv_imgbtn_set_src(btnReset, LV_IMGBTN_STATE_RELEASED, NULL, NULL, &reset);
-	lv_obj_add_style(btnReset, &style_def, 0);
-	lv_obj_add_style(btnReset, &style_pr, LV_STATE_PRESSED);
-	lv_obj_align_to(btnReset, rec_laranja, LV_ALIGN_BOTTOM_LEFT, -180, 99);
+	lv_obj_add_style(btnReset, &style, LV_STATE_PRESSED);
+	lv_obj_align_to(btnReset, rec_laranja, LV_ALIGN_BOTTOM_LEFT, -180, 96);
 	//lv_obj_align(btnReset, LV_ALIGN_BOTTOM_LEFT, 0, -2); // pq n funciona?
 //----------------------------------------------------------
 
@@ -187,7 +279,7 @@ void lv_bike(void) {
 	lv_obj_t * btn_play_pause = lv_btn_create(lv_scr_act());
 	lv_obj_add_event_cb(btn_play_pause, event_handler, LV_EVENT_ALL, NULL);
 	lv_obj_set_style_text_color(btn_play_pause, lv_color_make(0x00, 0x00, 0x00), LV_STATE_DEFAULT);
-	lv_obj_align(btn_play_pause, LV_ALIGN_BOTTOM_RIGHT, -22, -2);
+	lv_obj_align(btn_play_pause, LV_ALIGN_BOTTOM_RIGHT, -22, -8);
 	lv_obj_set_width(btn_play_pause, 35);  lv_obj_set_height(btn_play_pause, 32);
 	lv_obj_add_style(btn_play_pause, &style, 0);
 
@@ -195,6 +287,31 @@ void lv_bike(void) {
 	lv_label_set_text(labelBtnPlayPause, LV_SYMBOL_STOP);
 	lv_obj_center(labelBtnPlayPause);
 //----------------------------------------------------------
+
+	//------------------------ (a unidade de medida) [km]--------------------
+	labelKm = lv_label_create(lv_scr_act());
+	lv_obj_align(labelKm, LV_ALIGN_CENTER, -96, 105);
+	lv_obj_set_style_text_font(labelKm, &cascadia17, LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(labelKm, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text_fmt(labelKm, "km");
+	// -------------------------------------------------
+
+	//------------------------ (a unidade) [km/h]--------------------
+	labelSpeedUnity = lv_label_create(lv_scr_act());
+	lv_obj_align(labelSpeedUnity, LV_ALIGN_CENTER, 90, 105);
+	lv_obj_set_style_text_font(labelSpeedUnity, &cascadia17, LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(labelSpeedUnity, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text_fmt(labelSpeedUnity, "km/h");
+	// -------------------------------------------------
+
+	//------------------------ (a unidade do cronômetro) [MM:SS]--------------------
+	labelMMSSunit = lv_label_create(lv_scr_act());
+	lv_obj_align(labelMMSSunit, LV_ALIGN_CENTER, -5, 105);
+	lv_obj_set_style_text_font(labelMMSSunit, &cascadia17, LV_STATE_DEFAULT);
+	lv_obj_set_style_text_color(labelMMSSunit, lv_color_black(), LV_STATE_DEFAULT);
+	lv_label_set_text_fmt(labelMMSSunit, "mm:ss");
+	// -------------------------------------------------
+
 	
 }
 

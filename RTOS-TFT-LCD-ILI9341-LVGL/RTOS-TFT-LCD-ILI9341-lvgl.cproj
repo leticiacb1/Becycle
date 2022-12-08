@@ -858,6 +858,9 @@
     <Folder Include="src\touch\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\acelarando.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\ASF\thirdparty\lvgl8\examples\anim\lv_example_anim.h">
       <SubType>compile</SubType>
     </Compile>
@@ -2265,16 +2268,37 @@
     <Compile Include="src\ASF\thirdparty\lvgl8\tests\unity\unity_support.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\branco.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\cascadia17.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\cascadia20.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\cascadia25.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\cascadia65.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\clock.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\config\conf_touch.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\desacelarando.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\fundo_inicial.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\icones.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\line.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\logo.h">

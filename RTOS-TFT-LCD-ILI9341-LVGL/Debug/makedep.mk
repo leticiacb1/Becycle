@@ -620,6 +620,14 @@ src\ASF\thirdparty\lvgl8\tests\unity\unity.c
 
 src\ASF\thirdparty\lvgl8\tests\unity\unity_support.c
 
+src\cascadia17.c
+
+src\cascadia20.c
+
+src\cascadia25.c
+
+src\cascadia65.c
+
 src\touch\touch.c
 
 src\ASF\common\services\sleepmgr\sam\sleepmgr.c
