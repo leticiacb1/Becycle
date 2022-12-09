@@ -413,7 +413,7 @@ src/main.d src/main.o: ../src/main.c ../src/asf.h \
  ../src/touch/touch.h ../src/fundo_inicial.h ../src/logo.h \
  ../src/logoAoLigar.h ../src/icones.h ../src/rec.h ../src/reset.h \
  ../src/clock.h ../src/branco.h ../src/line.h ../src/acelarando.h \
- ../src/desacelarando.h
+ ../src/desacelarando.h ../src/logoConfig.h ../src/rodaConfig.h
 
 ../src/asf.h:
 
@@ -1280,3 +1280,7 @@ c:\aps\ 2\ becycle\src\asf\thirdparty\lvgl8\src\lvgl.h:
 ../src/acelarando.h:
 
 ../src/desacelarando.h:
+
+../src/logoConfig.h:
+
+../src/rodaConfig.h:

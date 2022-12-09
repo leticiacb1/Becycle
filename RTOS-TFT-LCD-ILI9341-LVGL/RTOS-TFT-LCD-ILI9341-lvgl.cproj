@@ -2307,10 +2307,16 @@
     <Compile Include="src\logoAoLigar.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\logoConfig.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\rec.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\reset.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\rodaConfig.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\touch\touch.c">
