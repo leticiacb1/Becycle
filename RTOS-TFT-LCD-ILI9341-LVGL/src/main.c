@@ -4,6 +4,7 @@
 
 #include <asf.h>
 #include <string.h>
+#include <math.h>
 #include "ili9341.h"
 #include "lvgl.h"
 #include "touch/touch.h"
@@ -21,7 +22,17 @@
 #include "logoConfig.h"
 #include "rodaConfig.h"
 
+// -------- SIMULA PULSO ---------
+ 
+#include "arm_math.h"
 
+#define TASK_SIMULATOR_STACK_SIZE (4096 / sizeof(portSTACK_TYPE))
+#define TASK_SIMULATOR_STACK_PRIORITY (tskIDLE_PRIORITY)
+
+#define RAIO 0.508/2
+#define VEL_MAX_KMH  5.0f
+#define VEL_MIN_KMH  0.5f
+//#define RAMP
 
 /************************************************************************/
 /* LCD / LVGL                                                           */
@@ -55,6 +66,7 @@ lv_obj_t * labelClock, * labelKmValue, * labelMMSS, * labelAvarageSpeed, * label
 SemaphoreHandle_t xSemaphoreSettings;
 SemaphoreHandle_t xSemaphoreGoBack;
 SemaphoreHandle_t xSemaphore1sec;
+SemaphoreHandle_t xSemaphoreRotateTime;
 
 // RTC:
 typedef struct  {
@@ -66,6 +78,15 @@ typedef struct  {
 	uint32_t minute;
 	uint32_t seccond;
 } calendar;
+
+uint32_t current_hour, current_min, current_sec;
+
+// Pino para a leitura do sensor PA19
+#define SENSOR_PIO          PIOA
+#define SENSOR_PIO_ID       ID_PIOA
+#define SENSOR_PIO_IDX      19
+#define SENSOR_IDX_MASK (1 << SENSOR_PIO_IDX)
+
 
 /************************************************************************/
 /* RTOS                                                                 */
@@ -94,10 +115,34 @@ extern void vApplicationMallocFailedHook(void) {
 }
 
 void RTC_init(Rtc *rtc, uint32_t id_rtc, calendar t, uint32_t irq_type);
+static void RTT_init(float freqPrescale, uint32_t IrqNPulses, uint32_t rttIRQSource);
 
 /************************************************************************/
 /* handler                                                               */
 /************************************************************************/
+
+
+void sensor_callback(void)
+{
+
+	// Caso borda de descida = pegar valor do contador
+	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+	xSemaphoreGiveFromISR(xSemaphoreRotateTime , &xHigherPriorityTaskWoken);
+
+}
+
+void RTT_Handler(void) {
+	uint32_t ul_status;
+
+	/* Get RTT status - ACK */
+	ul_status = rtt_get_status(RTT);
+	
+	/* IRQ due to Alarm */
+	if ((ul_status & RTT_SR_ALMS) == RTT_SR_ALMS) {
+		printf("\nalarme\n");
+	}
+
+}
 
 void RTC_Handler(void) {
 	uint32_t ul_status = rtc_get_status(RTC);
@@ -245,11 +290,7 @@ void tela_settings(lv_obj_t * scr){
 	lv_style_set_arc_rounded(&style, 0);
 	lv_style_set_img_recolor_opa(&style, LV_OPA_30);
 	lv_style_set_img_recolor(&style, lv_color_black());
-	
-	//######################################################################################
-	//#								Tela Settings                                          #
-	//######################################################################################
-	
+		
 	// ----------------	Branco	-----------
 	lv_obj_t * white = lv_img_create(scr);
 	lv_img_set_src(white, &branco);
@@ -276,7 +317,7 @@ void tela_settings(lv_obj_t * scr){
 	lv_label_set_text_fmt(labelMode, "Settings");
 	// ---------------------------------------------------
 	
-	// ------------------Botï¿½o Back ------------------------
+	// ------------------Botão Back ------------------------
 	lv_obj_t * btnBack = lv_btn_create(scr);
 	lv_obj_add_event_cb(btnBack, back_handler, LV_EVENT_ALL, NULL);
 	lv_obj_set_style_text_color(btnBack, lv_color_make(0x00, 0x00, 0x00), LV_STATE_DEFAULT);
@@ -289,9 +330,7 @@ void tela_settings(lv_obj_t * scr){
 	lv_obj_center(labelBack);
 	//----------------------------------------------------------
 	
-	
-	
-	// ----------------	Diï¿½metro-----------
+	// ----------------	Diametro-----------
 	labelDiameter = lv_label_create(scr);
 	lv_obj_align(labelDiameter,  LV_ALIGN_CENTER, 0, -108);
 	lv_obj_set_style_text_font(labelDiameter, &cascadia20, LV_STATE_DEFAULT);
@@ -579,13 +618,52 @@ void lv_bike(lv_obj_t * scr) {
 }
 
 /************************************************************************/
+/* FUNCTIONS                                                            */
+/************************************************************************/
+
+/**
+* raio 20" => 50,8 cm (diametro) => 0.508/2 = 0.254m (raio)
+* w = 2 pi f (m/s)
+* v [km/h] = (w*r) / 3.6 = (2 pi f r) / 3.6
+* f = v / (2 pi r 3.6)
+* Exemplo : 5 km / h = 1.38 m/s
+*           f = 0.87Hz
+*           t = 1/f => 1/0.87 = 1,149s
+*/
+float kmh_to_hz(float vel, float raio) {
+	float f = vel / (2*PI*raio*3.6);
+	return(f);
+}
+
+void config_sensor(){
+	// ------- Configura pino de leitura do sensor
+	pmc_enable_periph_clk(SENSOR_PIO_ID);
+	
+	pio_configure(SENSOR_PIO, PIO_INPUT, SENSOR_IDX_MASK, PIO_DEFAULT);
+	pio_set_debounce_filter(SENSOR_PIO, SENSOR_IDX_MASK, 60);
+	
+	pio_handler_set(SENSOR_PIO,
+	SENSOR_PIO_ID,
+	SENSOR_IDX_MASK,
+	PIO_IT_FALL_EDGE,
+	sensor_callback);
+	
+	pio_enable_interrupt(SENSOR_PIO, SENSOR_IDX_MASK);
+	pio_get_interrupt_status(SENSOR_PIO);
+	
+	NVIC_EnableIRQ(SENSOR_PIO_ID);
+	NVIC_SetPriority(SENSOR_PIO_ID, 4);
+}
+
+/************************************************************************/
 /* TASKS                                                                */
 /************************************************************************/
 
 static void task_rtc(void *pvParameters) {
 	
+	printf("\n Init task rtc \n");
+	
 	char str_hora[128] , str_min[128] , str_seg[128];
-	uint32_t current_hour, current_min, current_sec;
 	
 	// STRING hora
 	char str_time[128];
@@ -633,7 +711,93 @@ static void task_rtc(void *pvParameters) {
 	
 }
 
+static void task_sensor(void *pvParameters) {
+	
+	printf("\n Init task sensor \n");
+	
+	// Configuração 
+	config_sensor();
+	
+	// Contar segundo pulso
+	int conversor = 10000;
+	int calcula_delta_t = 0;
+	
+	// Guarda delta t e pega contador do RTT 
+	int counter = 0;
+	float delta_t = 0;
+	
+	// Inicializa contagem de tempo
+	// O primeiro valor é errado
+	RTT_init(10000, 0 , 0);	
+	
+	for (;;)  {
+		
+		if(xSemaphoreTake(xSemaphoreRotateTime , 0)){
+				
+				int counter = rtt_read_timer_value(RTT);
+				delta_t = counter/conversor;
+				float freq = 1/delta_t;
+				
+				float v = 2*PI*freq*RAIO;
+				
+				printf("\n FOI UM GIRO! Tempo do giro : %f , velocidade : %f\n", delta_t , v);
+				
+				RTT_init(10000, 0 , 0);	
+		}
+		
+	}
+																																																																																																																																																																																																																																																							
+}
+
+static void task_simulador(void *pvParameters) {
+	
+	printf("\n Init task simulador \n");
+	
+	pmc_enable_periph_clk(ID_PIOC);
+	pio_set_output(PIOC, PIO_PC31, 1, 0, 0);
+
+	float vel = VEL_MAX_KMH;
+	float f;
+	int ramp_up = 1;
+
+	while(1){
+		pio_clear(PIOC, PIO_PC31);
+		delay_ms(1);
+		pio_set(PIOC, PIO_PC31);
+			
+		/*		
+		// --------------------- Descomentar para velocidade variável ---------------------																																																																																																																																																																																																																																																																																																																																												#ifdef RAMP
+		if (ramp_up) {
+			printf("[SIMU] ACELERANDO: %d \n", (int) (10*vel));
+			vel += 0.5;
+			} else {
+			printf("[SIMU] DESACELERANDO: %d \n",  (int) (10*vel));
+			vel -= 0.5;
+		}
+
+		if (vel >= VEL_MAX_KMH)																																																																																				
+		ramp_up = 0;														
+		else if (vel <= VEL_MIN_KMH)
+		ramp_up = 1;
+		// ---------------------------------------------------------------------------------																														
+		*/
+		
+		// --------------------- Descomentar para velocidade constante ---------------------
+		vel = 5;
+		// printf("\n[SIMU] CONSTANTE: %d \n", (int) (10*vel));
+		// ---------------------------------------------------------------------------------
+	
+		f = kmh_to_hz(vel, RAIO);
+		int t = 965*(1.0/f); //UTILIZADO 965 como multiplicador ao invés de 1000
+		//para compensar o atraso gerado pelo Escalonador do freeRTOS
+		delay_ms(t);
+	}
+}
+
 static void task_lcd(void *pvParameters) {
+	
+	printf("\n Init task lcd \n");
+	
 	int px, py;
 	
 	// ----- Tela de Descanso
@@ -721,6 +885,33 @@ void RTC_init(Rtc *rtc, uint32_t id_rtc, calendar t, uint32_t irq_type) {
 	rtc_enable_interrupt(rtc,  irq_type);
 }
 
+static void RTT_init(float freqPrescale, uint32_t IrqNPulses, uint32_t rttIRQSource) {
+
+	uint16_t pllPreScale = (int) (((float) 32768) / freqPrescale);
+	
+	rtt_sel_source(RTT, false);
+	rtt_init(RTT, pllPreScale);
+	
+	if (rttIRQSource & RTT_MR_ALMIEN) {
+		uint32_t ul_previous_time;
+		ul_previous_time = rtt_read_timer_value(RTT);
+		while (ul_previous_time == rtt_read_timer_value(RTT));
+		rtt_write_alarm_time(RTT, IrqNPulses+ul_previous_time);
+	}
+
+	/* config NVIC */
+	NVIC_DisableIRQ(RTT_IRQn);
+	NVIC_ClearPendingIRQ(RTT_IRQn);
+	NVIC_SetPriority(RTT_IRQn, 4);
+	NVIC_EnableIRQ(RTT_IRQn);
+
+	/* Enable RTT interrupt */
+	if (rttIRQSource & (RTT_MR_RTTINCIEN | RTT_MR_ALMIEN))
+	rtt_enable_interrupt(RTT, rttIRQSource);
+	else
+	rtt_disable_interrupt(RTT, RTT_MR_RTTINCIEN | RTT_MR_ALMIEN);
+	
+}
 
 /************************************************************************/
 /* port lvgl                                                            */
@@ -786,13 +977,23 @@ int main(void) {
 	xSemaphoreSettings = xSemaphoreCreateBinary();
 	xSemaphoreGoBack = xSemaphoreCreateBinary();
 	xSemaphore1sec = xSemaphoreCreateBinary();
-
+	xSemaphoreRotateTime =  xSemaphoreCreateBinary();
+	
 	/* Create tasks */
 	if (xTaskCreate(task_lcd, "LCD", TASK_LCD_STACK_SIZE, NULL, TASK_LCD_STACK_PRIORITY, NULL) != pdPASS) {
 		printf("Failed to create lcd task\r\n");
 	}
+	
 	if (xTaskCreate(task_rtc, "RTC", TASK_LCD_STACK_SIZE, NULL, TASK_LCD_STACK_PRIORITY, NULL) != pdPASS) {
 		printf("Failed to create RTC task\r\n");
+	}
+	
+	if (xTaskCreate(task_sensor, "SENSOR", TASK_SIMULATOR_STACK_SIZE, NULL, TASK_SIMULATOR_STACK_PRIORITY, NULL) != pdPASS) {
+		printf("Failed to create sensor task\r\n");
+	}
+	
+	if (xTaskCreate(task_simulador, "SIMUL", TASK_SIMULATOR_STACK_SIZE, NULL, TASK_SIMULATOR_STACK_PRIORITY, NULL) != pdPASS) {
+		printf("Failed to create simu task\r\n");
 	}
 	
 	/* Start the scheduler. */
