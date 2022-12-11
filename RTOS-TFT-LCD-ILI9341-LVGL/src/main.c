@@ -61,6 +61,9 @@ static lv_indev_drv_t indev_drv;
 // globais 
 lv_obj_t * labelBtn1, * labelBtnPlayPause;
 lv_obj_t * labelClock, * labelKmValue, * labelMMSS, * labelAvarageSpeed, * labelMode, * labelKm, * labelMMSSunit, * labelSpeedUnity, * labelCurrentSpeed, * labelCurrentSpeedUnity, * labelDiameter, * labelSpeedUnity, * labelBack;
+lv_obj_t * acelerandoVerde;
+lv_obj_t * desacelerandoRed;
+
 
 // Semáforo
 SemaphoreHandle_t xSemaphoreSettings;
@@ -87,6 +90,7 @@ uint32_t current_hour, current_min, current_sec;
 #define SENSOR_PIO_IDX      19
 #define SENSOR_IDX_MASK (1 << SENSOR_PIO_IDX)
 
+#define DELTA_CONSTANTE 0.1
 
 /************************************************************************/
 /* RTOS                                                                 */
@@ -520,17 +524,19 @@ void lv_bike(lv_obj_t * scr) {
 
 
 // ----------------	Flecha acelarando verde	-----------
-	lv_obj_t * acelerandoVerde = lv_img_create(scr);
+	acelerandoVerde = lv_img_create(scr);
 	lv_img_set_src(acelerandoVerde, &acelarando); 
 	lv_obj_align(acelerandoVerde,  LV_ALIGN_CENTER, 60, -60);
+	lv_obj_add_flag(acelerandoVerde, LV_OBJ_FLAG_HIDDEN);
+
 // ---------------------------------------------------
 
-// ----------------	Flecha DESacelarando vermelha	-----------
-	lv_obj_t * desacelerandoRed = lv_img_create(scr);
+// ----------------	Flecha Desacelarando vermelha	-----------
+	desacelerandoRed = lv_img_create(scr);
 	lv_img_set_src(desacelerandoRed, &desacelarando);
 	lv_obj_align(desacelerandoRed,  LV_ALIGN_CENTER, -60, -60);
+	lv_obj_add_flag(desacelerandoRed, LV_OBJ_FLAG_HIDDEN);
 // ---------------------------------------------------
-
 
 // ------------------Botão Config ------------------------
 	lv_obj_t * btn1 = lv_btn_create(scr);
@@ -630,6 +636,15 @@ void lv_bike(lv_obj_t * scr) {
 *           f = 0.87Hz
 *           t = 1/f => 1/0.87 = 1,149s
 */
+
+float mod(float number){
+	if(number < 0){
+		return (-1)*number;
+	}
+	return number;
+}
+
+
 float kmh_to_hz(float vel, float raio) {
 	float f = vel / (2*PI*raio*3.6);
 	return(f);
@@ -719,30 +734,73 @@ static void task_sensor(void *pvParameters) {
 	config_sensor();
 	
 	// Contar segundo pulso
-	int conversor = 10000;
+	float conversor = 0.001;
 	int calcula_delta_t = 0;
 	
 	// Guarda delta t e pega contador do RTT 
 	int counter = 0;
-	float delta_t = 0;
+	float t = 0;
+	float freq = 0;
+	
+	float v = 0;
+	float vel_anterior = 0;
+	float acel ;
+	
+	float fator_km = 3.6;
+	int K = 1;
 	
 	// Inicializa contagem de tempo
 	// O primeiro valor é errado
-	RTT_init(10000, 0 , 0);	
+	RTT_init(1000, 0 , 0);	
 	
 	for (;;)  {
 		
 		if(xSemaphoreTake(xSemaphoreRotateTime , 0)){
 				
-				int counter = rtt_read_timer_value(RTT);
-				delta_t = counter/conversor;
-				float freq = 1/delta_t;
+				// ---- Calcula frequencia de giro ----
+				counter = rtt_read_timer_value(RTT);
+				t = counter*conversor;
+			    freq = 1/t;
 				
-				float v = 2*PI*freq*RAIO;
+				// ---- Reinicia Tempo ----
+				RTT_init(1000, 0 , 0);																																																																																				
 				
-				printf("\n FOI UM GIRO! Tempo do giro : %f , velocidade : %f\n", delta_t , v);
+				// ---- Cacula velocidade [km/h] ----																																																																																																																																																																																																																																																																																																																											
+				v = 2*PI*freq*RAIO*fator_km;																																																																																																																																																																																																																								
 				
-				RTT_init(10000, 0 , 0);	
+				printf("\n Counter : %d",  counter);
+				printf("\n Tempo : %f s \n",  t);
+				printf("\n Freq : %f Hz \n",  freq);
+				printf("\n Velocidade : %.4f km/h \n",  v);
+				
+				// ---- Sinal Aceleração ----
+				acel = v - vel_anterior;
+				
+				
+				// ---- Mudanças no LCD ----
+				lv_label_set_text_fmt(labelCurrentSpeed, "%.1f", v);
+				
+				if(mod(acel) < DELTA_CONSTANTE){
+					printf("\n CONSTANTE \n");
+					
+					lv_obj_add_flag(acelerandoVerde, LV_OBJ_FLAG_HIDDEN);
+					lv_obj_add_flag(desacelerandoRed, LV_OBJ_FLAG_HIDDEN);
+					
+				}else if (acel < 0){
+					printf("\nDESACELERA\n");
+					
+					lv_obj_add_flag(acelerandoVerde, LV_OBJ_FLAG_HIDDEN);
+					lv_obj_clear_flag(desacelerandoRed, LV_OBJ_FLAG_HIDDEN);				
+				}else if(acel > 0){
+					printf("\nACELERA\n");
+					
+					lv_obj_add_flag(desacelerandoRed, LV_OBJ_FLAG_HIDDEN);
+					lv_obj_clear_flag(acelerandoVerde, LV_OBJ_FLAG_HIDDEN);
+				}
+				
+				// ---- Atutaliza velocidade anterior
+				vel_anterior = v;
+				
 		}
 		
 	}
@@ -765,7 +823,7 @@ static void task_simulador(void *pvParameters) {
 		delay_ms(1);
 		pio_set(PIOC, PIO_PC31);
 			
-		/*		
+				
 		// --------------------- Descomentar para velocidade variável ---------------------																																																																																																																																																																																																																																																																																																																																												#ifdef RAMP
 		if (ramp_up) {
 			printf("[SIMU] ACELERANDO: %d \n", (int) (10*vel));
@@ -780,10 +838,9 @@ static void task_simulador(void *pvParameters) {
 		else if (vel <= VEL_MIN_KMH)
 		ramp_up = 1;
 		// ---------------------------------------------------------------------------------																														
-		*/
 		
 		// --------------------- Descomentar para velocidade constante ---------------------
-		vel = 5;
+		// vel = 5;
 		// printf("\n[SIMU] CONSTANTE: %d \n", (int) (10*vel));
 		// ---------------------------------------------------------------------------------
 	
