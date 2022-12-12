@@ -774,7 +774,6 @@ static void task_sensor(void *pvParameters) {
 	// ----- Informações do trajeto -----
 	float distancia_percorrida = 0;
 	float vel_media = 0;
-	float dt = 0;
 	int qtd_giros = 0;
 	
 	total_time_traj= 0;
@@ -852,13 +851,18 @@ static void task_sensor(void *pvParameters) {
 					// Atualiza a distancia a cada volta [km]
 					distancia_percorrida += 2*PI*RAIO*0.001;
 					printf("\n [TRAJETO] Distancia : %f \n", distancia_percorrida);
-					lv_label_set_text_fmt(labelKmValue, "%.1f", distancia_percorrida);
-										
+
+					// Velocidade média atualizada após 30s de percurso:
+					if(total_time_traj % 30 == 0){
+						float time_h = (total_time_traj/3600.0);
+						vel_media = distancia_percorrida/time_h;
+						printf("\n [TRAJETO] Velocidade Media : %f \n", vel_media);
+					}
 					
-					// Velocidade média:
+					lv_label_set_text_fmt(labelKmValue, "%.1f", distancia_percorrida);
+					lv_label_set_text_fmt(labelAvarageSpeed, "%.1f", vel_media);
 					
 				}
-				
 				
 				// ---- Atutaliza velocidade anterior
 				vel_anterior = v;
