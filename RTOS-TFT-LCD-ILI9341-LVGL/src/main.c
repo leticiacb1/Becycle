@@ -65,6 +65,10 @@ lv_obj_t * acelerandoVerde;
 lv_obj_t * desacelerandoRed;
 lv_obj_t * rec_laranja;
 
+volatile int gravando;
+volatile int total_time_traj;
+
+
 // Global que controla pausa ou nao do percurso
 // Semáforo
 SemaphoreHandle_t xSemaphoreSettings;
@@ -423,7 +427,7 @@ void lv_bike(lv_obj_t * scr) {
 	lv_obj_align(labelKmValue, LV_ALIGN_CENTER, -93, 85); 
 	lv_obj_set_style_text_font(labelKmValue, &cascadia25, LV_STATE_DEFAULT);
 	lv_obj_set_style_text_color(labelKmValue, lv_color_black(), LV_STATE_DEFAULT);
-	lv_label_set_text_fmt(labelKmValue, "%d",13);
+	lv_label_set_text_fmt(labelKmValue, "%d",0);
 // -------------------------------------------------
 
 
@@ -433,7 +437,7 @@ void lv_bike(lv_obj_t * scr) {
 	lv_obj_align(labelMMSS, LV_ALIGN_CENTER, -5, 85);
 	lv_obj_set_style_text_font(labelMMSS, &cascadia25, LV_STATE_DEFAULT);
 	lv_obj_set_style_text_color(labelMMSS, lv_color_black(), LV_STATE_DEFAULT);
-	lv_label_set_text_fmt(labelMMSS, "%d%d:%d%d",3,4,5,5);
+	lv_label_set_text_fmt(labelMMSS, "%d%d:%d%d",0,0,0,0);
 // -------------------------------------------------
 
 
@@ -442,7 +446,7 @@ void lv_bike(lv_obj_t * scr) {
 	lv_obj_align(labelAvarageSpeed, LV_ALIGN_CENTER, 90, 85);
 	lv_obj_set_style_text_font(labelAvarageSpeed, &cascadia25, LV_STATE_DEFAULT);
 	lv_obj_set_style_text_color(labelAvarageSpeed, lv_color_black(), LV_STATE_DEFAULT);
-	lv_label_set_text_fmt(labelAvarageSpeed, "%d", 18);
+	lv_label_set_text_fmt(labelAvarageSpeed, "%d", 0);
 // -------------------------------------------------
 
 
@@ -494,7 +498,7 @@ void lv_bike(lv_obj_t * scr) {
 	lv_obj_align(labelCurrentSpeed, LV_ALIGN_CENTER, 0, -60);
 	lv_obj_set_style_text_font(labelCurrentSpeed, &cascadia65, LV_STATE_DEFAULT);
 	lv_obj_set_style_text_color(labelCurrentSpeed, lv_color_black(), LV_STATE_DEFAULT);
-	lv_label_set_text_fmt(labelCurrentSpeed, "%d", 23);
+	lv_label_set_text_fmt(labelCurrentSpeed, "%d", 0);
 // -------------------------------------------------
 
 //------------------------ Unidade da Velocidade Instantanea--------------------
@@ -680,7 +684,7 @@ static void task_rtc(void *pvParameters) {
 		
 		if(xSemaphoreTake(xSemaphore1sec , 0 )){
 			
-			// Atualiza time
+			// ------------- Atualiza time - GLOBAL -------------
 			rtc_get_time(RTC, &current_hour, &current_min, &current_sec);
 			
 			if(current_hour < 10){
@@ -703,6 +707,38 @@ static void task_rtc(void *pvParameters) {
 			
 			sprintf(str_time, "%s:%s:%s", str_hora , str_min , str_seg);
 			lv_label_set_text_fmt(labelClock, "%s", str_time);
+			
+			// -------------------------------------------------
+			
+			
+			// ------------- Atualiza time - TRAJETO -------------
+			if(gravando){
+				char str_trajec_min[128] , str_trajec_sec[128] , str_trajec_time[256];
+				
+				total_time_traj++;
+				
+				int time_min = (total_time_traj/60) % 60;
+				int time_sec = total_time_traj % 60;
+				
+				printf("\n [TRAJETO] total : %d \n min: %d \n sec: %d \n", total_time_traj , time_min , time_sec);
+				
+				if(time_min < 10){
+					sprintf(str_trajec_min, "0%d", time_min);
+					}else{
+					sprintf(str_trajec_min, "%d", time_min);
+				}
+				
+				if(time_sec < 10){
+					sprintf(str_trajec_sec, "0%d", time_sec);
+					}else{
+					sprintf(str_trajec_sec, "%d", time_sec);
+				}
+				
+				sprintf(str_trajec_time, "%s:%s", str_trajec_min , str_trajec_sec);
+				lv_label_set_text_fmt( labelMMSS, "%s", str_trajec_time);
+				
+			}		
+			// -------------------------------------------------
 			
 		}
 		
@@ -729,11 +765,19 @@ static void task_sensor(void *pvParameters) {
 	float v = 0;
 	float vel_anterior = 0;
 	float acel ;
-	
+
 	float fator_km = 3.6;
 		
 	// Cria variável que indica se Trajeto esta sendo gravado ou não:
-	int gravando = 0 ;
+	gravando = 0 ;
+	
+	// ----- Informações do trajeto -----
+	float distancia_percorrida = 0;
+	float vel_media = 0;
+	float dt = 0;
+	int qtd_giros = 0;
+	
+	total_time_traj= 0;
 	
 	for (;;)  {
 		
@@ -755,6 +799,7 @@ static void task_sensor(void *pvParameters) {
 				// --- Altera LCD ---
 				lv_obj_clear_flag(rec_laranja, LV_OBJ_FLAG_HIDDEN);
 				lv_label_set_text(labelBtnPlayPause, LV_SYMBOL_STOP);
+				
 			}
 		}
 		
@@ -800,6 +845,20 @@ static void task_sensor(void *pvParameters) {
 					lv_obj_add_flag(desacelerandoRed, LV_OBJ_FLAG_HIDDEN);
 					lv_obj_clear_flag(acelerandoVerde, LV_OBJ_FLAG_HIDDEN);
 				}
+				    
+				// ----- Informações de trajeto -----
+				if(gravando){
+					
+					// Atualiza a distancia a cada volta [km]
+					distancia_percorrida += 2*PI*RAIO*0.001;
+					printf("\n [TRAJETO] Distancia : %f \n", distancia_percorrida);
+					lv_label_set_text_fmt(labelKmValue, "%.1f", distancia_percorrida);
+										
+					
+					// Velocidade média:
+					
+				}
+				
 				
 				// ---- Atutaliza velocidade anterior
 				vel_anterior = v;
