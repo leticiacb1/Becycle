@@ -63,13 +63,16 @@ lv_obj_t * labelBtn1, * labelBtnPlayPause;
 lv_obj_t * labelClock, * labelKmValue, * labelMMSS, * labelAvarageSpeed, * labelMode, * labelKm, * labelMMSSunit, * labelSpeedUnity, * labelCurrentSpeed, * labelCurrentSpeedUnity, * labelDiameter, * labelSpeedUnity, * labelBack;
 lv_obj_t * acelerandoVerde;
 lv_obj_t * desacelerandoRed;
+lv_obj_t * rec_laranja;
 
-
+// Global que controla pausa ou nao do percurso
 // Semáforo
 SemaphoreHandle_t xSemaphoreSettings;
 SemaphoreHandle_t xSemaphoreGoBack;
 SemaphoreHandle_t xSemaphore1sec;
 SemaphoreHandle_t xSemaphoreRotateTime;
+
+SemaphoreHandle_t xSemaphoreREC;
 
 // RTC:
 typedef struct  {
@@ -171,11 +174,13 @@ void RTC_Handler(void) {
 	rtc_clear_status(RTC, RTC_SCCR_TDERRCLR);
 }
 
-static void event_handler(lv_event_t * e) {
+static void play_pause_handler(lv_event_t * e) {
 	lv_event_code_t code = lv_event_get_code(e);
 
 	if(code == LV_EVENT_CLICKED) {
 		LV_LOG_USER("Clicked");
+		BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+		xSemaphoreGiveFromISR(xSemaphoreREC , &xHigherPriorityTaskWoken);
 	}
 	else if(code == LV_EVENT_VALUE_CHANGED) {
 		LV_LOG_USER("Toggled");
@@ -261,28 +266,6 @@ static void radiobutton_create(lv_obj_t * parent, const char * txt)
 	lv_obj_add_style(obj, &style_radio, LV_PART_INDICATOR);
 	lv_obj_add_style(obj, &style_radio_chk, LV_PART_INDICATOR | LV_STATE_CHECKED);
 
-}
-
-void lv_ex_btn_1(lv_obj_t * scr) {
- 	lv_obj_t * label; 
-	 
- 	lv_obj_t * btn1 = lv_btn_create(scr);
- 	lv_obj_add_event_cb(btn1, event_handler, LV_EVENT_ALL, NULL);
- 	lv_obj_align(btn1, LV_ALIGN_CENTER, 0, -40);
- 
- 	label = lv_label_create(btn1);
- 	lv_label_set_text(label, "Corsi");
- 	lv_obj_center(label);
- 
- 	lv_obj_t * btn2 = lv_btn_create(scr);
- 	lv_obj_add_event_cb(btn2, event_handler, LV_EVENT_ALL, NULL);
- 	lv_obj_align(btn2, LV_ALIGN_CENTER, 0, 40);
- 	lv_obj_add_flag(btn2, LV_OBJ_FLAG_CHECKABLE);
- 	lv_obj_set_height(btn2, LV_SIZE_CONTENT);
- 
- 	label = lv_label_create(btn2);
- 	lv_label_set_text(label, "Toggle");
- 	lv_obj_center(label);
 }
 
 void tela_settings(lv_obj_t * scr){
@@ -561,9 +544,10 @@ void lv_bike(lv_obj_t * scr) {
 // ---------------------------------------------------
 
 // ----------------Rec laranja (gravando) ---------------------
-	lv_obj_t * rec_laranja = lv_img_create(scr);
+	rec_laranja = lv_img_create(scr);
 	lv_img_set_src(rec_laranja, &rec);
 	lv_obj_align(rec_laranja, LV_ALIGN_BOTTOM_MID,0,-2);
+	lv_obj_add_flag(rec_laranja, LV_OBJ_FLAG_HIDDEN);
 //----------------------------------------------------------
 
 // ----------------Reset ---------------------
@@ -587,14 +571,14 @@ void lv_bike(lv_obj_t * scr) {
 
 // ------------------Botï¿½o Play/Pause ------------------------
 	lv_obj_t * btn_play_pause = lv_btn_create(scr);
-	lv_obj_add_event_cb(btn_play_pause, event_handler, LV_EVENT_ALL, NULL);
+	lv_obj_add_event_cb(btn_play_pause, play_pause_handler, LV_EVENT_ALL, NULL);
 	lv_obj_set_style_text_color(btn_play_pause, lv_color_make(0x00, 0x00, 0x00), LV_STATE_DEFAULT);
 	lv_obj_align(btn_play_pause, LV_ALIGN_BOTTOM_RIGHT, -22, -4);
 	lv_obj_set_width(btn_play_pause, 35);  lv_obj_set_height(btn_play_pause, 32);
 	lv_obj_add_style(btn_play_pause, &style, 0);
 
 	labelBtnPlayPause = lv_label_create(btn_play_pause);
-	lv_label_set_text(labelBtnPlayPause, LV_SYMBOL_STOP);
+	lv_label_set_text(labelBtnPlayPause, LV_SYMBOL_PLAY);
 	lv_obj_center(labelBtnPlayPause);
 //----------------------------------------------------------
 
@@ -747,13 +731,32 @@ static void task_sensor(void *pvParameters) {
 	float acel ;
 	
 	float fator_km = 3.6;
-	int K = 1;
-	
-	// Inicializa contagem de tempo
-	// O primeiro valor é errado
-	RTT_init(1000, 0 , 0);	
+		
+	// Cria variável que indica se Trajeto esta sendo gravado ou não:
+	int gravando = 0 ;
 	
 	for (;;)  {
+		
+		if(xSemaphoreTake(xSemaphoreREC, 0)){
+			if(gravando){
+				gravando = 0;
+				
+				printf("\nPARA GRAVAÇÃO\n");
+				
+				// --- Altera LCD ---
+				lv_obj_add_flag(rec_laranja, LV_OBJ_FLAG_HIDDEN);
+				lv_label_set_text(labelBtnPlayPause, LV_SYMBOL_PLAY);
+				
+			}else{
+				gravando = 1;
+				
+				printf("\n GRAVANDO ..  \n");
+				
+				// --- Altera LCD ---
+				lv_obj_clear_flag(rec_laranja, LV_OBJ_FLAG_HIDDEN);
+				lv_label_set_text(labelBtnPlayPause, LV_SYMBOL_STOP);
+			}
+		}
 		
 		if(xSemaphoreTake(xSemaphoreRotateTime , 0)){
 				
@@ -768,10 +771,10 @@ static void task_sensor(void *pvParameters) {
 				// ---- Cacula velocidade [km/h] ----																																																																																																																																																																																																																																																																																																																											
 				v = 2*PI*freq*RAIO*fator_km;																																																																																																																																																																																																																								
 				
-				printf("\n Counter : %d",  counter);
-				printf("\n Tempo : %f s \n",  t);
-				printf("\n Freq : %f Hz \n",  freq);
-				printf("\n Velocidade : %.4f km/h \n",  v);
+				//printf("\n Counter : %d",  counter);
+				//printf("\n Tempo : %f s \n",  t);
+				//printf("\n Freq : %f Hz \n",  freq);
+				//printf("\n Velocidade : %.4f km/h \n",  v);
 				
 				// ---- Sinal Aceleração ----
 				acel = v - vel_anterior;
@@ -823,7 +826,7 @@ static void task_simulador(void *pvParameters) {
 		delay_ms(1);
 		pio_set(PIOC, PIO_PC31);
 			
-				
+		/*		
 		// --------------------- Descomentar para velocidade variável ---------------------																																																																																																																																																																																																																																																																																																																																												#ifdef RAMP
 		if (ramp_up) {
 			printf("[SIMU] ACELERANDO: %d \n", (int) (10*vel));
@@ -838,9 +841,10 @@ static void task_simulador(void *pvParameters) {
 		else if (vel <= VEL_MIN_KMH)
 		ramp_up = 1;
 		// ---------------------------------------------------------------------------------																														
+		*/
 		
 		// --------------------- Descomentar para velocidade constante ---------------------
-		// vel = 5;
+		vel = 5;
 		// printf("\n[SIMU] CONSTANTE: %d \n", (int) (10*vel));
 		// ---------------------------------------------------------------------------------
 	
@@ -1035,6 +1039,7 @@ int main(void) {
 	xSemaphoreGoBack = xSemaphoreCreateBinary();
 	xSemaphore1sec = xSemaphoreCreateBinary();
 	xSemaphoreRotateTime =  xSemaphoreCreateBinary();
+	xSemaphoreREC = xSemaphoreCreateBinary();
 	
 	/* Create tasks */
 	if (xTaskCreate(task_lcd, "LCD", TASK_LCD_STACK_SIZE, NULL, TASK_LCD_STACK_PRIORITY, NULL) != pdPASS) {
