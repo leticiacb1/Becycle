@@ -1,26 +1,13 @@
-# 21b - APS2 - Embarcados
+# Becycle - Um Ciclocomputador
 
-O marketing de uma empresa de equipamentos esportivos quer criar um novo ciclocomputador e você foi escolhido como desenvolvedor autônomo, dado seu background técnico e de UX, para criar um protótipo e validar a ideia.
+O projeto foi realizando pensando na necessidade de uma empresa de marketing de equipamentos esportivos para a  criação de um novo ciclocomputador.
+Para isso pensou-se em um design que supre a necessidade de um ciclista, que pode sofrer iterações a depender da analise de terceiros, objetivando a mlehor interface possível para o usuário.
+
+Para a realização do projeto utilizou-se o microcontrolador SAME70 em conjunto com o LCD max Touch.
 
 Mais detalhes no site da disciplina:
 
 - https://insper.github.io/ComputacaoEmbarcada/navigation/APS/APS-2-Bike/Descricao/
-
-## Detalhes
-
-Integrantes:
-
-- Letícia Coêlho
-- Lorran Lopes
-- Lister Ribeiro
-
-Nome da marca:
-
-- BeCycle 
-
-<div align="center">
-<img alt="logo black and white" src = "img_README/logo.png"></img>
-</div>
 
 ## Interface
 
