@@ -9,6 +9,19 @@ Mais detalhes no site da disciplina:
 
 - https://insper.github.io/ComputacaoEmbarcada/navigation/APS/APS-2-Bike/Descricao/
 
+### ⚙️ Configuração e Funcinamento
+
+- Software utilizado para programação no microcontrolador: [Microchip Studio](https://www.microchip.com/en-us/tools-resources/develop/microchip-studio)
+
+Carregue o código do arquivo  `RTOS-TFT-LCD-ILI9341-LVGL/src/main.c` no microcontrolador SAME70.
+
+Em seguida conecte o LCD na saída 2 como mostra a imagem a seguir:
+
+
+
+- Vídeo explicativo do projeto em funcionamento : [aqui](https://alinsperedu-my.sharepoint.com/personal/lorrancml_al_insper_edu_br/_layouts/15/stream.aspx?id=%2Fpersonal%2Florrancml%5Fal%5Finsper%5Fedu%5Fbr%2FDocuments%2FVideo%20Bike%2F2022%2D12%2D12%2022%2D19%2D51%2Emkv&ga=1)
+
+
 ### 📌️ Interface
 
 > Iteração 1 
