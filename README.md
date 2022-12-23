@@ -52,3 +52,6 @@ Mudanças sugeridas pelo entrevistado: 
 </div>
 
 - Vídeo explicando a interface: https://alinsperedu-my.sharepoint.com/:v:/g/personal/lorrancml_al_insper_edu_br/Ef7LpS-XtGtHgFJdoI-nnlcBDtCAWLhO4IVfrB1vLdf7gQ?e=XFgjst
+
+
+@2022, Insper. Quinto Semestre, Engenharia da Computação.
